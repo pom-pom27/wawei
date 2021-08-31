@@ -7,7 +7,7 @@ import 'company.dart';
 part 'users.g.dart';
 
 @JsonSerializable()
-class User extends Equatable {
+class RawUser extends Equatable {
   final int? id;
   final String? name;
   final String? username;
@@ -17,7 +17,7 @@ class User extends Equatable {
   final String? website;
   final Company? company;
 
-  const User({
+  const RawUser({
     this.id,
     this.name,
     this.username,
@@ -28,9 +28,10 @@ class User extends Equatable {
     this.company,
   });
 
-  factory User.fromJson(Map<String, dynamic> json) => _$UsersFromJson(json);
+  factory RawUser.fromJson(Map<String, dynamic> json) =>
+      _$RawUserFromJson(json);
 
-  Map<String, dynamic> toJson() => _$UsersToJson(this);
+  Map<String, dynamic> toJson() => _$RawUserToJson(this);
 
   @override
   bool get stringify => true;

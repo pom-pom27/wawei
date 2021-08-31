@@ -1,7 +1,8 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:jsonica/models/models.dart';
+
+import 'models/models.dart';
 
 /// Exception thrown when fetchListUser fails.
 class UsersRequestFailure implements Exception {}
@@ -18,7 +19,23 @@ class Api {
 
   static const _baseUrl = 'jsonplaceholder.typicode.com';
 
-  Future<List<User>> fetchUsers() async {
+  Future<RawUser> fetchUser({required int id}) async {
+    final userUrl = Uri.https(
+      _baseUrl,
+      '/users/$id',
+    );
+
+    final userResponse = await _httpClient.get(userUrl);
+
+    if (userResponse.statusCode != 200) {
+      throw UsersRequestFailure();
+    }
+
+    final decodedJson = jsonDecode(userResponse.body);
+    return RawUser.fromJson(decodedJson);
+  }
+
+  Future<List<RawUser>> fetchUsers() async {
     final userListUrl = Uri.https(
       _baseUrl,
       '/users',
@@ -30,12 +47,14 @@ class Api {
       throw UsersRequestFailure();
     }
 
-    final rawUsers = jsonDecode(usersResponse.body) as List;
+    final decodedJson = jsonDecode(usersResponse.body) as List;
 
-    if (rawUsers.isEmpty) {
+    if (decodedJson.isEmpty) {
       throw UsersIsEmpty();
     }
 
-    return rawUsers.map((e) => User.fromJson(e)).toList();
+    final rawUsers = decodedJson.map((e) => RawUser.fromJson(e)).toList();
+
+    return rawUsers;
   }
 }

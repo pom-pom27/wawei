@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:jsonica/models/models.dart';
+import 'package:jsonica/services/models/models.dart';
 
 void main() {
   group('Users -', () {
@@ -24,7 +24,7 @@ void main() {
           "bs": "harness real-time e-markets"
         }
       };
-      expect(User.fromJson(json), isA<User>());
+      expect(RawUser.fromJson(json), isA<RawUser>());
     });
   });
 }
