@@ -25,6 +25,17 @@ class UserListView extends StatefulWidget {
 
 class _UserListViewState extends State<UserListView> {
   final TextEditingController _searchController = TextEditingController();
+  bool _isSearchEmpty = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(() {
+      setState(() {
+        _isSearchEmpty = _searchController.text.isEmpty;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,11 +60,22 @@ class _UserListViewState extends State<UserListView> {
           child: Column(
             children: [
               TextField(
+                controller: _searchController,
                 onChanged: (value) {
                   context.read<UserCubit>().searchUsers(value);
                 },
                 decoration: InputDecoration(
-                    hintText: 'Search by name', border: OutlineInputBorder()),
+                  hintText: 'Search by name',
+                  border: OutlineInputBorder(),
+                  // suffixIcon: _isSearchEmpty
+                  //     ? null
+                  //     : IconButton(
+                  //         icon: Icon(Icons.clear),
+                  //         onPressed: () {
+                  //           _searchController.clear();
+                  //         },
+                  //       ),
+                ),
               ),
               Expanded(
                 child: BlocConsumer<UserCubit, UserState>(
