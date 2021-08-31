@@ -10,15 +10,33 @@ class UserCubit extends Cubit<UserState> {
 
   final UserRepository _userRepository;
 
+  List<User> filteredList = [];
+
   Future<void> fetchUsers() async {
     emit(state.copyWith(status: UserStatus.loading));
 
     try {
       final users = await _userRepository.getUsers();
 
+      filteredList = users;
+
       emit(state.copyWith(users: users, status: UserStatus.success));
     } catch (e) {
       emit(state.copyWith(status: UserStatus.failure));
     }
+  }
+
+  void searchUsers(String query) {
+    if (query.isEmpty) {
+      emit(state.copyWith(users: this.filteredList));
+    }
+
+    final lowCaseQuery = query.toLowerCase();
+
+    final filteredList = state.users
+        .where((user) => user.name!.toLowerCase().contains(lowCaseQuery))
+        .toList();
+
+    emit(state.copyWith(users: filteredList));
   }
 }
