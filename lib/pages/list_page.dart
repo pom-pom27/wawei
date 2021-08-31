@@ -31,6 +31,18 @@ class _UserListViewState extends State<UserListView> {
     return Scaffold(
         appBar: AppBar(
           title: Text('User List '),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  context.read<UserCubit>().sortUsers(true);
+                },
+                icon: Icon(Icons.arrow_upward)),
+            IconButton(
+                onPressed: () {
+                  context.read<UserCubit>().sortUsers(false);
+                },
+                icon: Icon(Icons.arrow_downward)),
+          ],
         ),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
