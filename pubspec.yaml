@@ -30,6 +30,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_bloc: ^7.2.0
+  font_awesome_flutter: ^9.1.0
   http: ^0.13.3
   json_annotation: ^4.0.1
 

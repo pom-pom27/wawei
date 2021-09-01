@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../cubit/user_cubit.dart';
 import '../repositories/models/user/user.dart';
 import '../repositories/user_repository.dart';
@@ -31,6 +32,7 @@ class _UserListViewState extends State<UserListView> {
   void initState() {
     super.initState();
     _searchController.addListener(() {
+      context.read<UserCubit>().searchUsers(_searchController.text);
       setState(() {
         _isSearchEmpty = _searchController.text.isEmpty;
       });
@@ -47,12 +49,12 @@ class _UserListViewState extends State<UserListView> {
                 onPressed: () {
                   context.read<UserCubit>().sortUsers(true);
                 },
-                icon: Icon(Icons.arrow_upward)),
+                icon: FaIcon(FontAwesomeIcons.sortAlphaUp)),
             IconButton(
                 onPressed: () {
                   context.read<UserCubit>().sortUsers(false);
                 },
-                icon: Icon(Icons.arrow_downward)),
+                icon: FaIcon(FontAwesomeIcons.sortAlphaDown)),
           ],
         ),
         body: Padding(
@@ -61,20 +63,18 @@ class _UserListViewState extends State<UserListView> {
             children: [
               TextField(
                 controller: _searchController,
-                onChanged: (value) {
-                  context.read<UserCubit>().searchUsers(value);
-                },
                 decoration: InputDecoration(
                   hintText: 'Search by name',
+                  prefixIcon: Icon(Icons.search),
                   border: OutlineInputBorder(),
-                  // suffixIcon: _isSearchEmpty
-                  //     ? null
-                  //     : IconButton(
-                  //         icon: Icon(Icons.clear),
-                  //         onPressed: () {
-                  //           _searchController.clear();
-                  //         },
-                  //       ),
+                  suffixIcon: _isSearchEmpty
+                      ? null
+                      : IconButton(
+                          icon: Icon(Icons.clear),
+                          onPressed: () {
+                            _searchController.clear();
+                          },
+                        ),
                 ),
               ),
               Expanded(
@@ -102,7 +102,18 @@ class _UserListViewState extends State<UserListView> {
                           child: ListView.builder(
                             itemBuilder: (context, idx) {
                               final user = state.users[idx];
-                              return UserItem(user: user);
+
+                              final queryText = user.name!
+                                  .substring(0, _searchController.text.length);
+
+                              final remainingText = user.name!
+                                  .substring(_searchController.text.length);
+
+                              return UserItem(
+                                user: user,
+                                queryText: queryText,
+                                remainingText: remainingText,
+                              );
                             },
                             itemCount: state.users.length,
                           ),
@@ -177,9 +188,13 @@ class UserItem extends StatelessWidget {
   const UserItem({
     Key? key,
     required this.user,
+    required this.queryText,
+    required this.remainingText,
   }) : super(key: key);
 
   final User user;
+
+  final String queryText, remainingText;
 
   @override
   Widget build(BuildContext context) {
@@ -191,7 +206,25 @@ class UserItem extends StatelessWidget {
             Icons.account_circle,
             color: Colors.blue[400],
           )),
-      title: Text(user.name ?? 'No Name'),
+      title: queryText.isEmpty
+          ? Text(user.name ?? 'No name')
+          : RichText(
+              text: TextSpan(
+                  text: queryText,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      fontSize: 16),
+                  children: [
+                    TextSpan(
+                      text: remainingText,
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    )
+                  ]),
+            ),
       subtitle: Text(user.email ?? 'No Email'),
     );
   }

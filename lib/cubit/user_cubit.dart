@@ -35,7 +35,7 @@ class UserCubit extends Cubit<UserState> {
     final lowCaseQuery = query.toLowerCase();
 
     final filteredList = state.users
-        .where((user) => user.name!.toLowerCase().contains(lowCaseQuery))
+        .where((user) => user.name!.toLowerCase().startsWith(lowCaseQuery))
         .toList();
 
     emit(state.copyWith(users: filteredList));
